@@ -1,0 +1,326 @@
+# Railway AI QR Management System - Development Environment
+# Smart India Hackathon 2025
+
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: railway_postgres
+    environment:
+      POSTGRES_DB: railway_qr_system
+      POSTGRES_USER: railway_user
+      POSTGRES_PASSWORD: railway_pass
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/postgres/schemas:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    networks:
+      - railway_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U railway_user -d railway_qr_system"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: railway_mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: railway_user
+      MONGO_INITDB_ROOT_PASSWORD: railway_pass
+      MONGO_INITDB_DATABASE: railway_analytics
+    volumes:
+      - mongodb_data:/data/db
+      - ./database/mongodb/init:/docker-entrypoint-initdb.d
+    ports:
+      - "27017:27017"
+    networks:
+      - railway_network
+    restart: unless-stopped
+    command: mongod --auth --replSet rs0
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: railway_redis
+    command: redis-server --appendonly yes --requirepass railway_pass
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - railway_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # FastAPI Core Service
+  core-api:
+    build:
+      context: ./core-api
+      dockerfile: Dockerfile
+    container_name: railway_core_api
+    environment:
+      - ENVIRONMENT=development
+      - DEBUG=true
+      - POSTGRES_SERVER=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=railway_user
+      - POSTGRES_PASSWORD=railway_pass
+      - POSTGRES_DB=railway_qr_system
+      - MONGODB_URL=mongodb://railway_user:railway_pass@mongodb:27017/railway_analytics?authSource=admin
+      - REDIS_URL=redis://railway_user:railway_pass@redis:6379
+      - QR_SERVICE_URL=http://qr-service:3001
+      - REALTIME_SERVICE_URL=http://realtime-service:3002
+      - AI_SERVICE_URL=http://ai-service:8001
+    volumes:
+      - ./core-api:/app
+      - core_uploads:/app/uploads
+      - core_logs:/app/logs
+    ports:
+      - "8000:8000"
+    networks:
+      - railway_network
+    depends_on:
+      - postgres
+      - mongodb
+      - redis
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Node.js QR Service
+  qr-service:
+    build:
+      context: ./qr-service
+      dockerfile: Dockerfile
+    container_name: railway_qr_service
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - MONGODB_URL=mongodb://railway_user:railway_pass@mongodb:27017/railway_analytics?authSource=admin
+      - POSTGRES_URL=postgresql://railway_user:railway_pass@postgres:5432/railway_qr_system
+      - REDIS_URL=redis://railway_user:railway_pass@redis:6379
+      - CORE_API_URL=http://core-api:8000
+      - REALTIME_SERVICE_URL=http://realtime-service:3002
+      - JWT_SECRET=your-jwt-secret-key
+      - MAX_FILE_SIZE=52428800
+    volumes:
+      - ./qr-service:/app
+      - qr_uploads:/app/uploads
+      - qr_generated:/app/generated
+    ports:
+      - "3001:3001"
+    networks:
+      - railway_network
+    depends_on:
+      - postgres
+      - mongodb
+      - redis
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Node.js Real-time Service
+  realtime-service:
+    build:
+      context: ./realtime-service
+      dockerfile: Dockerfile
+    container_name: railway_realtime_service
+    environment:
+      - NODE_ENV=development
+      - PORT=3002
+      - MONGODB_URL=mongodb://railway_user:railway_pass@mongodb:27017/railway_analytics?authSource=admin
+      - REDIS_URL=redis://railway_user:railway_pass@redis:6379
+      - CORE_API_URL=http://core-api:8000
+      - QR_SERVICE_URL=http://qr-service:3001
+      - JWT_SECRET=your-jwt-secret-key
+    volumes:
+      - ./realtime-service:/app
+    ports:
+      - "3002:3002"
+    networks:
+      - railway_network
+    depends_on:
+      - mongodb
+      - redis
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Python AI/ML Service
+  ai-service:
+    build:
+      context: ./ai-ml-service
+      dockerfile: Dockerfile
+    container_name: railway_ai_service
+    environment:
+      - ENVIRONMENT=development
+      - POSTGRES_URL=postgresql://railway_user:railway_pass@postgres:5432/railway_qr_system
+      - MONGODB_URL=mongodb://railway_user:railway_pass@mongodb:27017/railway_analytics?authSource=admin
+      - REDIS_URL=redis://railway_user:railway_pass@redis:6379
+      - CORE_API_URL=http://core-api:8000
+      - MODEL_PATH=/app/models
+    volumes:
+      - ./ai-ml-service:/app
+      - ai_models:/app/models
+      - ai_data:/app/data
+    ports:
+      - "8001:8001"
+    networks:
+      - railway_network
+    depends_on:
+      - postgres
+      - mongodb
+      - redis
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Web Dashboard (React/Next.js)
+  web-dashboard:
+    build:
+      context: ./web-dashboard
+      dockerfile: Dockerfile
+    container_name: railway_web_dashboard
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_CORE_API_URL=http://localhost:8000/api/v1
+      - NEXT_PUBLIC_QR_SERVICE_URL=http://localhost:3001/api
+      - NEXT_PUBLIC_REALTIME_SERVICE_URL=http://localhost:3002
+      - NEXT_PUBLIC_AI_SERVICE_URL=http://localhost:8001
+    volumes:
+      - ./web-dashboard:/app
+      - /app/node_modules
+      - /app/.next
+    ports:
+      - "3000:3000"
+    networks:
+      - railway_network
+    depends_on:
+      - core-api
+      - qr-service
+      - realtime-service
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Nginx Load Balancer & Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: railway_nginx
+    volumes:
+      - ./infrastructure/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./infrastructure/nginx/conf.d:/etc/nginx/conf.d
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - railway_network
+    depends_on:
+      - core-api
+      - qr-service
+      - realtime-service
+      - ai-service
+      - web-dashboard
+    restart: unless-stopped
+
+  # Prometheus Monitoring
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: railway_prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    volumes:
+      - ./infrastructure/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - railway_network
+    restart: unless-stopped
+
+  # Grafana Dashboard
+  grafana:
+    image: grafana/grafana:latest
+    container_name: railway_grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./infrastructure/monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./infrastructure/monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+    ports:
+      - "3001:3000"
+    networks:
+      - railway_network
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+# Volumes
+volumes:
+  postgres_data:
+    driver: local
+  mongodb_data:
+    driver: local
+  redis_data:
+    driver: local
+  core_uploads:
+    driver: local
+  core_logs:
+    driver: local
+  qr_uploads:
+    driver: local
+  qr_generated:
+    driver: local
+  ai_models:
+    driver: local
+  ai_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+# Networks
+networks:
+  railway_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

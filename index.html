@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Railway AI QR Management System - Backend Module</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1>Railway AI QR Backend</h1>
+                    <span class="version">v2.0</span>
+                </div>
+                <nav class="nav-tabs">
+                    <button class="nav-tab active" data-tab="architecture">Architecture</button>
+                    <button class="nav-tab" data-tab="services">Services</button>
+                    <button class="nav-tab" data-tab="api">API Explorer</button>
+                    <button class="nav-tab" data-tab="database">Database</button>
+                    <button class="nav-tab" data-tab="deployment">Deployment</button>
+                    <button class="nav-tab" data-tab="security">Security</button>
+                    <button class="nav-tab" data-tab="monitoring">Monitoring</button>
+                </nav>
+                <div class="download-section">
+                    <a href="https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/3d283b40a038c9269f41caf5d048515a/dc211780-a40d-4af0-a2c0-bae337be8ae2/5d03a7f5.zip" 
+                       target="_blank" class="btn btn--primary download-btn">
+                        Download Complete Backend Module
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Architecture Overview Tab -->
+            <div id="architecture" class="tab-content active">
+                <div class="section-header">
+                    <h2>Backend Architecture Overview</h2>
+                    <p>Interactive microservices architecture for Railway AI QR Management System</p>
+                </div>
+                
+                <div class="architecture-diagram">
+                    <div class="service-grid">
+                        <div class="service-box" data-service="fastapi_core">
+                            <div class="service-status running"></div>
+                            <h3>FastAPI Core Service</h3>
+                            <p>Port 8000</p>
+                            <span class="service-type">Python API Server</span>
+                        </div>
+                        
+                        <div class="service-box" data-service="qr_service">
+                            <div class="service-status running"></div>
+                            <h3>Node.js QR Service</h3>
+                            <p>Port 3001</p>
+                            <span class="service-type">QR Operations</span>
+                        </div>
+                        
+                        <div class="service-box" data-service="realtime_service">
+                            <div class="service-status running"></div>
+                            <h3>Real-time Service</h3>
+                            <p>Port 3002</p>
+                            <span class="service-type">WebSocket & Sync</span>
+                        </div>
+                        
+                        <div class="service-box" data-service="ai_service">
+                            <div class="service-status running"></div>
+                            <h3>AI/ML Service</h3>
+                            <p>Port 8001</p>
+                            <span class="service-type">Machine Learning</span>
+                        </div>
+                    </div>
+                    
+                    <div class="database-layer">
+                        <h3>Database Layer</h3>
+                        <div class="db-grid">
+                            <div class="db-box">
+                                <h4>PostgreSQL</h4>
+                                <p>Transactional Data</p>
+                                <span class="port">Port 5432</span>
+                            </div>
+                            <div class="db-box">
+                                <h4>MongoDB</h4>
+                                <p>Analytics & Real-time</p>
+                                <span class="port">Port 27017</span>
+                            </div>
+                            <div class="db-box">
+                                <h4>Redis</h4>
+                                <p>Caching & Sessions</p>
+                                <span class="port">Port 6379</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service Details Modal -->
+                <div id="service-modal" class="modal hidden">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 id="modal-title"></h3>
+                            <button class="modal-close">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="service-info">
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <label>Status:</label>
+                                        <span id="service-status" class="status status--success">Running</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <label>Port:</label>
+                                        <span id="service-port"></span>
+                                    </div>
+                                    <div class="info-item">
+                                        <label>Files:</label>
+                                        <span id="service-files"></span>
+                                    </div>
+                                </div>
+                                
+                                <div class="features-section">
+                                    <h4>Features</h4>
+                                    <ul id="service-features"></ul>
+                                </div>
+                                
+                                <div class="endpoints-section">
+                                    <h4>Key Endpoints</h4>
+                                    <div id="service-endpoints"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Services Tab -->
+            <div id="services" class="tab-content">
+                <div class="section-header">
+                    <h2>Service Management</h2>
+                    <p>Monitor and control backend services</p>
+                </div>
+                
+                <div class="services-grid">
+                    <div class="card service-card">
+                        <div class="card__body">
+                            <div class="service-header">
+                                <h3>FastAPI Core Service</h3>
+                                <div class="service-toggle">
+                                    <input type="checkbox" id="toggle-fastapi" checked>
+                                    <label for="toggle-fastapi"></label>
+                                </div>
+                            </div>
+                            <p>High-performance Python API server handling core railway operations</p>
+                            <div class="service-metrics">
+                                <div class="metric">
+                                    <span class="metric-value">247</span>
+                                    <span class="metric-label">Requests/min</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-value">12ms</span>
+                                    <span class="metric-label">Avg Response</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card service-card">
+                        <div class="card__body">
+                            <div class="service-header">
+                                <h3>Node.js QR Service</h3>
+                                <div class="service-toggle">
+                                    <input type="checkbox" id="toggle-qr" checked>
+                                    <label for="toggle-qr"></label>
+                                </div>
+                            </div>
+                            <p>Specialized QR code generation and processing service</p>
+                            <div class="service-metrics">
+                                <div class="metric">
+                                    <span class="metric-value">89</span>
+                                    <span class="metric-label">QRs Generated</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-value">156</span>
+                                    <span class="metric-label">Scans Today</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card service-card">
+                        <div class="card__body">
+                            <div class="service-header">
+                                <h3>Real-time Service</h3>
+                                <div class="service-toggle">
+                                    <input type="checkbox" id="toggle-realtime" checked>
+                                    <label for="toggle-realtime"></label>
+                                </div>
+                            </div>
+                            <p>WebSocket connections and live data synchronization</p>
+                            <div class="service-metrics">
+                                <div class="metric">
+                                    <span class="metric-value">23</span>
+                                    <span class="metric-label">Active Connections</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-value">1.2k</span>
+                                    <span class="metric-label">Events/hour</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card service-card">
+                        <div class="card__body">
+                            <div class="service-header">
+                                <h3>AI/ML Service</h3>
+                                <div class="service-toggle">
+                                    <input type="checkbox" id="toggle-ai" checked>
+                                    <label for="toggle-ai"></label>
+                                </div>
+                            </div>
+                            <p>Machine learning models for predictive maintenance and analytics</p>
+                            <div class="service-metrics">
+                                <div class="metric">
+                                    <span class="metric-value">94%</span>
+                                    <span class="metric-label">Model Accuracy</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-value">7</span>
+                                    <span class="metric-label">Predictions</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- API Explorer Tab -->
+            <div id="api" class="tab-content">
+                <div class="section-header">
+                    <h2>API Explorer</h2>
+                    <p>Explore available endpoints and test API functionality</p>
+                </div>
+                
+                <div class="api-explorer">
+                    <div class="api-sidebar">
+                        <h3>Services</h3>
+                        <div class="api-service-list">
+                            <div class="api-service active" data-api="fastapi">
+                                <h4>FastAPI Core</h4>
+                                <span>4 endpoints</span>
+                            </div>
+                            <div class="api-service" data-api="qr">
+                                <h4>QR Service</h4>
+                                <span>4 endpoints</span>
+                            </div>
+                            <div class="api-service" data-api="realtime">
+                                <h4>Real-time</h4>
+                                <span>3 endpoints</span>
+                            </div>
+                            <div class="api-service" data-api="ai">
+                                <h4>AI/ML Service</h4>
+                                <span>3 endpoints</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="api-content">
+                        <div id="api-fastapi" class="api-endpoints active">
+                            <div class="endpoint">
+                                <div class="endpoint-header">
+                                    <span class="method get">GET</span>
+                                    <span class="path">/api/v1/railway/tracks</span>
+                                </div>
+                                <p>List railway tracks with filtering capabilities</p>
+                                <div class="endpoint-details">
+                                    <div class="auth-info">
+                                        <span class="auth-badge">Bearer Token</span>
+                                    </div>
+                                    <button class="btn btn--sm btn--outline copy-btn" data-copy="GET /api/v1/railway/tracks">Copy</button>
+                                </div>
+                            </div>
+                            
+                            <div class="endpoint">
+                                <div class="endpoint-header">
+                                    <span class="method post">POST</span>
+                                    <span class="path">/api/v1/railway/components</span>
+                                </div>
+                                <p>Create new railway component</p>
+                                <div class="endpoint-details">
+                                    <div class="auth-info">
+                                        <span class="auth-badge">Bearer Token</span>
+                                    </div>
+                                    <button class="btn btn--sm btn--outline copy-btn" data-copy="POST /api/v1/railway/components">Copy</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="api-qr" class="api-endpoints">
+                            <div class="endpoint">
+                                <div class="endpoint-header">
+                                    <span class="method post">POST</span>
+                                    <span class="path">/api/qr/generate</span>
+                                </div>
+                                <p>Generate QR code with templates</p>
+                                <div class="endpoint-details">
+                                    <div class="auth-info">
+                                        <span class="auth-badge">API Key</span>
+                                    </div>
+                                    <button class="btn btn--sm btn--outline copy-btn" data-copy="POST /api/qr/generate">Copy</button>
+                                </div>
+                            </div>
+                            
+                            <div class="endpoint">
+                                <div class="endpoint-header">
+                                    <span class="method post">POST</span>
+                                    <span class="path">/api/qr/scan</span>
+                                </div>
+                                <p>Scan and validate QR code</p>
+                                <div class="endpoint-details">
+                                    <div class="auth-info">
+                                        <span class="auth-badge">API Key</span>
+                                    </div>
+                                    <button class="btn btn--sm btn--outline copy-btn" data-copy="POST /api/qr/scan">Copy</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="api-realtime" class="api-endpoints">
+                            <div class="endpoint">
+                                <div class="endpoint-header">
+                                    <span class="method ws">WS</span>
+                                    <span class="path">/ws/railway-updates</span>
+                                </div>
+                                <p>Railway data live updates via WebSocket</p>
+                                <div class="endpoint-details">
+                                    <div class="auth-info">
+                                        <span class="auth-badge">WebSocket Token</span>
+                                    </div>
+                                    <button class="btn btn--sm btn--outline copy-btn" data-copy="WS /ws/railway-updates">Copy</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="api-ai" class="api-endpoints">
+                            <div class="endpoint">
+                                <div class="endpoint-header">
+                                    <span class="method post">POST</span>
+                                    <span class="path">/api/ai/predict/maintenance</span>
+                                </div>
+                                <p>Predict component maintenance needs</p>
+                                <div class="endpoint-details">
+                                    <div class="auth-info">
+                                        <span class="auth-badge">Bearer Token</span>
+                                    </div>
+                                    <button class="btn btn--sm btn--outline copy-btn" data-copy="POST /api/ai/predict/maintenance">Copy</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Database Tab -->
+            <div id="database" class="tab-content">
+                <div class="section-header">
+                    <h2>Database Schema</h2>
+                    <p>Visual database schema and data relationships</p>
+                </div>
+                
+                <div class="database-tabs">
+                    <button class="db-tab active" data-db="postgresql">PostgreSQL</button>
+                    <button class="db-tab" data-db="mongodb">MongoDB</button>
+                    <button class="db-tab" data-db="redis">Redis</button>
+                </div>
+                
+                <div id="postgresql" class="db-content active">
+                    <div class="tables-grid">
+                        <div class="table-card">
+                            <h4>users</h4>
+                            <p>User accounts and authentication</p>
+                            <div class="columns">
+                                <span>id, username, email, role, permissions</span>
+                            </div>
+                        </div>
+                        
+                        <div class="table-card">
+                            <h4>railway_components</h4>
+                            <p>Railway components registry</p>
+                            <div class="columns">
+                                <span>id, component_id, serial_number, type, status</span>
+                            </div>
+                        </div>
+                        
+                        <div class="table-card">
+                            <h4>qr_codes</h4>
+                            <p>QR code registry</p>
+                            <div class="columns">
+                                <span>id, qr_id, component_id, status, scan_count</span>
+                            </div>
+                        </div>
+                        
+                        <div class="table-card">
+                            <h4>component_inspections</h4>
+                            <p>Digital inspection records</p>
+                            <div class="columns">
+                                <span>id, inspection_id, component_id, condition_score</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="mongodb" class="db-content">
+                    <div class="collections-grid">
+                        <div class="collection-card">
+                            <h4>qr_analytics</h4>
+                            <p>QR usage analytics</p>
+                            <div class="fields">
+                                <span>qr_id, event_type, timestamp, location</span>
+                            </div>
+                        </div>
+                        
+                        <div class="collection-card">
+                            <h4>realtime_events</h4>
+                            <p>Live event streaming</p>
+                            <div class="fields">
+                                <span>event_type, data, timestamp, user_id</span>
+                            </div>
+                        </div>
+                        
+                        <div class="collection-card">
+                            <h4>ml_training_data</h4>
+                            <p>Machine learning datasets</p>
+                            <div class="fields">
+                                <span>model_type, features, labels, created_at</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="redis" class="db-content">
+                    <div class="redis-usage">
+                        <div class="usage-card">
+                            <h4>Caching Strategy</h4>
+                            <ul>
+                                <li>User session caching</li>
+                                <li>API response caching</li>
+                                <li>Rate limiting counters</li>
+                                <li>Real-time data buffering</li>
+                                <li>Queue management</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Deployment Tab -->
+            <div id="deployment" class="tab-content">
+                <div class="section-header">
+                    <h2>Deployment Guide</h2>
+                    <p>Docker compose setup and configuration</p>
+                </div>
+                
+                <div class="deployment-grid">
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>Quick Start</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="command-block">
+                                <code>docker-compose up -d</code>
+                                <button class="copy-btn-inline" data-copy="docker-compose up -d">Copy</button>
+                            </div>
+                            <div class="command-block">
+                                <code>docker-compose ps</code>
+                                <button class="copy-btn-inline" data-copy="docker-compose ps">Copy</button>
+                            </div>
+                            <div class="command-block">
+                                <code>docker-compose logs -f</code>
+                                <button class="copy-btn-inline" data-copy="docker-compose logs -f">Copy</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>Environment Configuration</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="env-tabs">
+                                <button class="env-tab active" data-env="development">Development</button>
+                                <button class="env-tab" data-env="production">Production</button>
+                            </div>
+                            
+                            <div id="development" class="env-content active">
+                                <div class="env-vars">
+                                    <div class="env-var">
+                                        <strong>DEBUG:</strong> true
+                                    </div>
+                                    <div class="env-var">
+                                        <strong>HOT_RELOAD:</strong> true
+                                    </div>
+                                    <div class="env-var">
+                                        <strong>LOGGING:</strong> verbose
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div id="production" class="env-content">
+                                <div class="env-vars">
+                                    <div class="env-var">
+                                        <strong>WORKERS:</strong> 4
+                                    </div>
+                                    <div class="env-var">
+                                        <strong>SECURITY:</strong> strict
+                                    </div>
+                                    <div class="env-var">
+                                        <strong>MONITORING:</strong> enabled
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>Health Check Status</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="health-checks">
+                                <div class="health-item">
+                                    <span class="health-status healthy"></span>
+                                    <span>FastAPI Core</span>
+                                </div>
+                                <div class="health-item">
+                                    <span class="health-status healthy"></span>
+                                    <span>QR Service</span>
+                                </div>
+                                <div class="health-item">
+                                    <span class="health-status healthy"></span>
+                                    <span>Real-time Service</span>
+                                </div>
+                                <div class="health-item">
+                                    <span class="health-status healthy"></span>
+                                    <span>AI/ML Service</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Tab -->
+            <div id="security" class="tab-content">
+                <div class="section-header">
+                    <h2>Security Features</h2>
+                    <p>Authentication, authorization, and security controls</p>
+                </div>
+                
+                <div class="security-grid">
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>Authentication Methods</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="auth-methods">
+                                <div class="auth-method">
+                                    <h4>JWT Bearer Tokens</h4>
+                                    <p>With refresh token rotation</p>
+                                </div>
+                                <div class="auth-method">
+                                    <h4>API Keys</h4>
+                                    <p>Service-to-service authentication</p>
+                                </div>
+                                <div class="auth-method">
+                                    <h4>Session Management</h4>
+                                    <p>Secure session handling with Redis</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>Role-Based Access Control</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="roles-matrix">
+                                <div class="role-item">
+                                    <span class="role-badge admin">Admin</span>
+                                    <span>Full system access</span>
+                                </div>
+                                <div class="role-item">
+                                    <span class="role-badge supervisor">Supervisor</span>
+                                    <span>Manage teams and operations</span>
+                                </div>
+                                <div class="role-item">
+                                    <span class="role-badge inspector">Inspector</span>
+                                    <span>Conduct inspections</span>
+                                </div>
+                                <div class="role-item">
+                                    <span class="role-badge operator">Operator</span>
+                                    <span>Daily operations</span>
+                                </div>
+                                <div class="role-item">
+                                    <span class="role-badge viewer">Viewer</span>
+                                    <span>Read-only access</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>Security Protection</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="protection-features">
+                                <div class="protection-item">
+                                    <h4>Rate Limiting</h4>
+                                    <p>Request throttling per user/IP</p>
+                                </div>
+                                <div class="protection-item">
+                                    <h4>Input Validation</h4>
+                                    <p>Request data sanitization</p>
+                                </div>
+                                <div class="protection-item">
+                                    <h4>Security Headers</h4>
+                                    <p>CORS, CSP, XSS protection</p>
+                                </div>
+                                <div class="protection-item">
+                                    <h4>Audit Logging</h4>
+                                    <p>Complete activity tracking</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Monitoring Tab -->
+            <div id="monitoring" class="tab-content">
+                <div class="section-header">
+                    <h2>Monitoring & Analytics</h2>
+                    <p>System metrics and performance monitoring</p>
+                </div>
+                
+                <div class="monitoring-dashboard">
+                    <div class="metrics-row">
+                        <div class="metric-card">
+                            <h3>Request Rate</h3>
+                            <div class="metric-value">247 req/min</div>
+                            <div class="metric-trend positive">+12%</div>
+                        </div>
+                        <div class="metric-card">
+                            <h3>Response Time</h3>
+                            <div class="metric-value">12ms avg</div>
+                            <div class="metric-trend positive">-8%</div>
+                        </div>
+                        <div class="metric-card">
+                            <h3>Error Rate</h3>
+                            <div class="metric-value">0.02%</div>
+                            <div class="metric-trend positive">-15%</div>
+                        </div>
+                        <div class="metric-card">
+                            <h3>CPU Usage</h3>
+                            <div class="metric-value">23%</div>
+                            <div class="metric-trend neutral">+1%</div>
+                        </div>
+                    </div>
+                    
+                    <div class="charts-section">
+                        <div class="chart-card">
+                            <h3>Service Performance</h3>
+                            <div class="chart-container" style="position: relative; height: 300px;">
+                                <canvas id="performance-chart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-card">
+                            <h3>QR Operations</h3>
+                            <div class="chart-container" style="position: relative; height: 300px;">
+                                <canvas id="qr-operations-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
